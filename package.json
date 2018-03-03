@@ -1,0 +1,37 @@
+{
+  "name": "service-deps",
+  "version": "1.0.0",
+  "description": "Library to make sure all microservices are running that the app depends on",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap --cov --timeout 1 --reporter spec test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/firstandthird/service-deps.git"
+  },
+  "keywords": [
+    "micro-service",
+    "service",
+    "health",
+    "registry"
+  ],
+  "author": "First+Third",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/firstandthird/service-deps/issues"
+  },
+  "homepage": "https://github.com/firstandthird/service-deps#readme",
+  "devDependencies": {
+    "eslint": "^4.18.2",
+    "eslint-config-firstandthird": "^4.3.0",
+    "eslint-plugin-import": "^2.9.0",
+    "tap": "^11.1.1"
+  },
+  "dependencies": {
+    "wreck": "^14.0.2"
+  },
+  "eslintConfig": {
+    "extends": "firstandthird"
+  }
+}
