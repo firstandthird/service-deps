@@ -58,5 +58,6 @@ tap.test('events', async (t) => {
   await wait(1);
   t.equals(start, true);
   t.equals(stop, true);
+  server.close();
   t.end();
 });

@@ -65,5 +65,6 @@ tap.test('invalid service', (t) => {
   t.end();
 });
 tap.test('health url', (t) => {
+  server.close();
   t.end();
 });

@@ -69,6 +69,7 @@ tap.test('service error', async (t) => {
     await sd.checkService('test');
   } catch (e) {
     t.notEquals(e, null);
+    server.close();
     t.end();
   }
 });
