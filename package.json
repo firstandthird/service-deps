@@ -4,7 +4,7 @@
   "description": "Library to make sure all microservices are running that the app depends on",
   "main": "index.js",
   "scripts": {
-    "test": "tap --cov --timeout 1 --reporter spec test"
+    "test": "tap --cov --reporter spec test"
   },
   "repository": {
     "type": "git",
