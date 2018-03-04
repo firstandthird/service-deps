@@ -2,6 +2,8 @@ const { URL } = require('url');
 const querystring = require('querystring');
 const wreck = require('wreck');
 const EventEmitter = require('events');
+const Joi = require('joi');
+
 class ServiceDeps extends EventEmitter {
   constructor(obj = {}) {
     super();
@@ -32,9 +34,16 @@ class ServiceDeps extends EventEmitter {
         endpoint: value
       };
     }
-    //TODO Joi validate obj
-    this.services[name] = value;
-    this.emit('service.add', name, value);
+    const validation = Joi.validate(value, {
+      endpoint: Joi.string().uri(),
+      prefix: Joi.string().default(''),
+      health: Joi.string().default('/')
+    });
+    if (validation.error) {
+      throw validation.error;
+    }
+    this.services[name] = validation.value;
+    this.emit('service.add', name, validation.value);
   }
 
   getUrl(name, path, query) {

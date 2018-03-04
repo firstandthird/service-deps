@@ -14,7 +14,9 @@ tap.test('#getService', (t) => {
 
   const service = sd.getService('test');
   t.deepEqual(service, {
-    endpoint: 'http://test'
+    endpoint: 'http://test',
+    health: '/',
+    prefix: ''
   });
   t.end();
 });
@@ -39,7 +41,9 @@ tap.test('#getServices', (t) => {
   const services2 = sd.getServices();
   t.deepEqual(services2, {
     test: {
-      endpoint: 'http://test'
+      endpoint: 'http://test',
+      health: '/',
+      prefix: ''
     }
   });
   t.end();
@@ -52,7 +56,9 @@ tap.test('#addService', (t) => {
   const services = sd.getServices();
   t.deepEqual(services, {
     test: {
-      endpoint: 'http://test'
+      endpoint: 'http://test',
+      health: '/',
+      prefix: ''
     }
   });
   t.end();
