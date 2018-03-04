@@ -62,7 +62,14 @@ tap.test('error check all', async (t) => {
 });
 
 tap.test('invalid service', (t) => {
-  t.end();
+  const sd = new ServiceDeps();
+  try {
+    sd.addService('test', { nein: 'just no' });
+  } catch (e) {
+    t.match(e.toString(), 'ValidationError: "nein" is not allowed');
+    return t.end();
+  }
+  t.fail();
 });
 tap.test('health url', (t) => {
   server.close();

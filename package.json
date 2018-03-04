@@ -29,6 +29,7 @@
     "tap": "^11.1.1"
   },
   "dependencies": {
+    "joi": "^13.1.2",
     "wreck": "^14.0.2"
   },
   "eslintConfig": {
