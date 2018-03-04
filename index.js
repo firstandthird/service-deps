@@ -42,8 +42,8 @@ class ServiceDeps extends EventEmitter {
     if (validation.error) {
       throw validation.error;
     }
-    this.services[name] = value;
-    this.emit('service.add', name, value);
+    this.services[name] = validation.value;
+    this.emit('service.add', name, validation.value);
   }
 
   getUrl(name, path, query) {

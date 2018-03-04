@@ -38,6 +38,7 @@ tap.test('path prefix', (t) => {
   const services = {
     test: {
       endpoint: 'http://test',
+      health: '/',
       prefix: 'prefix/'
     }
   };

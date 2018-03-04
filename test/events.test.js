@@ -14,7 +14,9 @@ tap.test('add service event', (t) => {
   sd.on('service.add', (name, value) => {
     t.equals(name, 'test');
     t.deepEquals(value, {
-      endpoint: 'http://test'
+      endpoint: 'http://test',
+      health: '/',
+      prefix: ''
     });
     t.end();
   });
@@ -26,7 +28,9 @@ tap.test('check service event', async (t) => {
   sd.on('service.check', (name, service, url) => {
     t.equals(name, 'test');
     t.deepEquals(service, {
-      endpoint: 'http://localhost:8081'
+      endpoint: 'http://localhost:8081',
+      health: '/',
+      prefix: ''
     });
     t.equals(url, 'http://localhost:8081/');
     t.end();
@@ -43,7 +47,9 @@ tap.test('service success event', async (t) => {
   sd.on('service.success', (name, service, res) => {
     t.equals(name, 'test');
     t.deepEquals(service, {
-      endpoint: 'http://localhost:8081'
+      endpoint: 'http://localhost:8081',
+      health: '/',
+      prefix: ''
     });
     t.equals(typeof res, 'object');
     t.end();
@@ -60,7 +66,9 @@ tap.test('service error', async (t) => {
   sd.on('service.error', (name, service, error) => {
     t.equals(name, 'test');
     t.deepEquals(service, {
-      endpoint: 'http://localhost:8082'
+      endpoint: 'http://localhost:8082',
+      health: '/',
+      prefix: ''
     });
     t.equals(error.message, 'Client request error: connect ECONNREFUSED 127.0.0.1:8082');
   });
