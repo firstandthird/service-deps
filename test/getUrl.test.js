@@ -48,3 +48,17 @@ tap.test('path prefix', (t) => {
   t.equals(url, 'http://test/prefix/health');
   t.end();
 });
+
+tap.test('env.SERVICE_{NAME} will override endpoint', (t) => {
+  process.env.SERVICE_TEST = 'http://test:8080/';
+  const services = {
+    test: {
+      health: '/'
+    }
+  };
+  const sd = new ServiceDeps({ services });
+
+  const url = sd.getUrl('test', 'health');
+  t.equals(url, 'http://test:8080/health');
+  t.end();
+});
