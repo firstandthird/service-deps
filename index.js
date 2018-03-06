@@ -34,6 +34,9 @@ class ServiceDeps extends EventEmitter {
         endpoint: value
       };
     }
+    // see if there's an environment variable that overrides this:
+    value.endpoint = process.env[`SERVICE_${name.toUpperCase()}`] || value.endpoint;
+
     const validation = Joi.validate(value, {
       endpoint: Joi.string().uri(),
       prefix: Joi.string().default(''),
