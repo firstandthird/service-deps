@@ -70,7 +70,8 @@ tap.test('service error', async (t) => {
     t.match(service, {
       endpoint: 'http://localhost:8082',
       health: '/',
-      prefix: ''
+      prefix: '',
+      status: 'down'
     });
     t.equals(error.message, 'Client request error: connect ECONNREFUSED 127.0.0.1:8082');
   });
