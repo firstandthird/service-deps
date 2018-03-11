@@ -31,6 +31,8 @@ tap.test('error check one', async (t) => {
     await sd.checkService('bad');
   } catch (e) {
     t.equals(e.message, 'Client request error: connect ECONNREFUSED 127.0.0.1:8082');
+    t.isA(sd.services.bad.lastChecked, Date, 'logs time of failed check');
+    t.equals(sd.services.bad.status, 'down', 'logs status of failed check');
     t.end();
   }
 });

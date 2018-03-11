@@ -46,11 +46,13 @@ tap.test('service success event', async (t) => {
   });
   sd.on('service.success', (name, service, res) => {
     t.equals(name, 'test');
-    t.deepEquals(service, {
+    t.match(service, {
       endpoint: 'http://localhost:8081',
       health: '/',
-      prefix: ''
+      prefix: '',
+      status: 'up'
     });
+    t.isA(service.lastChecked, Date);
     t.equals(typeof res, 'object');
     t.end();
   });
@@ -65,7 +67,7 @@ tap.test('service error', async (t) => {
   });
   sd.on('service.error', (name, service, error) => {
     t.equals(name, 'test');
-    t.deepEquals(service, {
+    t.match(service, {
       endpoint: 'http://localhost:8082',
       health: '/',
       prefix: ''

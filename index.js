@@ -62,8 +62,13 @@ class ServiceDeps extends EventEmitter {
     const healthUrl = this.getUrl(name, service.health);
     this.emit('service.check', name, service, healthUrl);
     let res;
+    service.lastChecked = new Date();
+    service.status = 'down';
     try {
       res = await wreck.get(healthUrl);
+      if (res.res.statusCode === 200) {
+        service.status = 'up';
+      }
       this.emit('service.success', name, service, res);
     } catch (e) {
       this.emit('service.error', name, service, e);
