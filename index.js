@@ -74,6 +74,7 @@ class ServiceDeps extends EventEmitter {
     } catch (e) {
       // will re-try with the fallback url if one is specified:
       if (service.fallback) {
+        this.emit('service.fallback', name, service, service.endpoint, service.fallback);
         service.endpoint = service.fallback;
         delete service.fallback;
         return this.checkService(name);
