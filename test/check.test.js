@@ -84,6 +84,7 @@ tap.test('error check fallback', async (t) => {
   const sd = new ServiceDeps({ services });
   await sd.checkService('badNoWaitOkay');
   t.match(sd.services.badNoWaitOkay, {
+    status: 'up'
   });
   t.end();
 });
