@@ -40,7 +40,8 @@ class ServiceDeps extends EventEmitter {
     const validation = Joi.validate(value, {
       endpoint: Joi.string().uri(),
       prefix: Joi.string().default(''),
-      health: Joi.string().default('/')
+      health: Joi.string().default('/'),
+      fallback: Joi.string().uri().optional()
     });
     if (validation.error) {
       throw validation.error;
@@ -71,6 +72,13 @@ class ServiceDeps extends EventEmitter {
       }
       this.emit('service.success', name, service, res);
     } catch (e) {
+      // will re-try with the fallback url if one is specified:
+      if (service.fallback) {
+        this.emit('service.fallback', name, service, service.endpoint, service.fallback);
+        service.endpoint = service.fallback;
+        delete service.fallback;
+        return this.checkService(name);
+      }
       this.emit('service.error', name, service, e);
       throw e;
     }

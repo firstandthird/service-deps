@@ -80,9 +80,31 @@ tap.test('service error', async (t) => {
     await sd.checkService('test');
   } catch (e) {
     t.notEquals(e, null);
-    server.close();
     t.end();
   }
+});
+
+tap.test('service.fallback', async (t) => {
+  const sd = new ServiceDeps();
+  let called = false;
+  sd.on('service.fallback', (name, service, oldUrl, newUrl) => {
+    t.equals(name, 'test');
+    t.match(oldUrl, 'http://localhost:8082');
+    t.match(newUrl, 'http://localhost:8081');
+    called = true;
+  });
+  sd.addService('test', { endpoint: 'http://localhost:8082', fallback: 'http://localhost:8081' });
+  await sd.checkService('test');
+  await new Promise(resolve => setTimeout(resolve, 200));
+  t.ok(called);
+  t.match(sd.services.test, {
+    endpoint: 'http://localhost:8081',
+    prefix: '',
+    health: '/',
+    status: 'up'
+  });
+  server.close();
+  t.end();
 });
 
 tap.todo('services.check');

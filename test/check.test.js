@@ -73,6 +73,22 @@ tap.test('invalid service', (t) => {
   }
   t.fail();
 });
+
+tap.test('error check fallback', async (t) => {
+  const services = {
+    badNoWaitOkay: {
+      endpoint: 'http://localhost:8082',
+      fallback: 'http://localhost:8081'
+    }
+  };
+  const sd = new ServiceDeps({ services });
+  await sd.checkService('badNoWaitOkay');
+  t.match(sd.services.badNoWaitOkay, {
+    status: 'up'
+  });
+  t.end();
+});
+
 tap.test('health url', (t) => {
   server.close();
   t.end();
