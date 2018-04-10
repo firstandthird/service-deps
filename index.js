@@ -52,9 +52,13 @@ class ServiceDeps extends EventEmitter {
 
   getUrl(name, path, query) {
     const service = this.getService(name);
-    path = path || '/';
     const qs = query ? `?${querystring.stringify(query)}` : '';
-    const url = new URL(`${service.prefix || ''}${path}${qs}`, service.endpoint);
+
+    const base = new URL(service.endpoint);
+
+    path = path || base.pathname;
+
+    const url = new URL(`${service.prefix || ''}${path}${qs}`, base);
     return url.toString();
   }
 
