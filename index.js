@@ -1,4 +1,5 @@
 const { URL } = require('url');
+const p = require('path');
 const querystring = require('querystring');
 const wreck = require('wreck');
 const EventEmitter = require('events');
@@ -52,9 +53,21 @@ class ServiceDeps extends EventEmitter {
 
   getUrl(name, path, query) {
     const service = this.getService(name);
-    path = path || '/';
     const qs = query ? `?${querystring.stringify(query)}` : '';
-    const url = new URL(`${service.prefix || ''}${path}${qs}`, service.endpoint);
+
+    const base = new URL(service.endpoint);
+
+    path = path || '';
+
+    if (service.prefix) {
+      path = p.posix.join(service.prefix, path);
+    }
+
+    if (base.pathname) {
+      path = p.posix.join(base.pathname, path);
+    }
+
+    const url = new URL(`${path}${qs}`, base);
     return url.toString();
   }
 
