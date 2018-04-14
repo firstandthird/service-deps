@@ -6,7 +6,7 @@ const EventEmitter = require('events');
 const Joi = require('joi');
 
 class ServiceDeps extends EventEmitter {
-  constructor(obj = {}) {
+  constructor(obj = {}, checkTimeout = 5) {
     super();
     this.services = {};
     if (obj.services) {
@@ -14,6 +14,7 @@ class ServiceDeps extends EventEmitter {
         this.addService(key, value);
       });
     }
+    this.checkTimeout = checkTimeout * 1000;
     this.monitorInterval = obj.monitorInterval || 1000 * 30;
   }
 
@@ -79,7 +80,7 @@ class ServiceDeps extends EventEmitter {
     service.lastChecked = new Date();
     service.status = 'down';
     try {
-      res = await wreck.get(healthUrl);
+      res = await wreck.get(healthUrl, { timeout: this.checkTimeout });
       if (res.res.statusCode === 200) {
         service.status = 'up';
       }
