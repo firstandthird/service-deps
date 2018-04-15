@@ -14,6 +14,7 @@ class ServiceDeps extends EventEmitter {
         this.addService(key, value);
       });
     }
+    this.retries = obj.retries || 0;
     this.monitorInterval = obj.monitorInterval || 1000 * 30;
   }
 
@@ -78,22 +79,27 @@ class ServiceDeps extends EventEmitter {
     let res;
     service.lastChecked = new Date();
     service.status = 'down';
-    try {
-      res = await wreck.get(healthUrl);
-      if (res.res.statusCode === 200) {
-        service.status = 'up';
+    for (let i = 0; i < this.retries + 1; i++) {
+      try {
+        res = await wreck.get(healthUrl);
+        if (res.res.statusCode === 200) {
+          service.status = 'up';
+        }
+        this.emit('service.success', name, service, res);
+        return res;
+      } catch (e) {
+        // will re-try with the fallback url if one is specified:
+        if (service.fallback) {
+          this.emit('service.fallback', name, service, service.endpoint, service.fallback);
+          service.endpoint = service.fallback;
+          delete service.fallback;
+          return this.checkService(name);
+        }
+        this.emit('service.error', name, service, e);
+        if (this.retries === 0 || i === this.retries - 1) {
+          throw e;
+        }
       }
-      this.emit('service.success', name, service, res);
-    } catch (e) {
-      // will re-try with the fallback url if one is specified:
-      if (service.fallback) {
-        this.emit('service.fallback', name, service, service.endpoint, service.fallback);
-        service.endpoint = service.fallback;
-        delete service.fallback;
-        return this.checkService(name);
-      }
-      this.emit('service.error', name, service, e);
-      throw e;
     }
     return res;
   }

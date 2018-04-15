@@ -9,7 +9,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(8081);
-
+/*
 tap.test('successful check one', async (t) => {
   const services = {
     test: 'http://localhost:8081'
@@ -86,6 +86,29 @@ tap.test('error check fallback', async (t) => {
   t.match(sd.services.badNoWaitOkay, {
     status: 'up'
   });
+  t.end();
+});
+*/
+tap.test('retries', async (t) => {
+  let letPass = 0;
+  console.log('start retry server');
+  const retryServer = http.createServer((req, res) => {
+    letPass++;
+    console.log(letPass);
+    if (letPass > 3) {
+      res.end();
+    }
+  });
+  retryServer.listen(8085);
+  const services = {
+    test: 'http://localhost:8085',
+  };
+  const sd = new ServiceDeps({ services, retries: 5 });
+  console.log('check it');
+  await sd.checkServices();
+  console.log('close it:');
+  retryServer.close();
+  console.log('close');
   t.end();
 });
 
