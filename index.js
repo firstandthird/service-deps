@@ -6,7 +6,7 @@ const EventEmitter = require('events');
 const Joi = require('joi');
 
 class ServiceDeps extends EventEmitter {
-  constructor(obj = {}, checkTimeout = 5) {
+  constructor(obj = {}) {
     super();
     this.services = {};
     if (obj.services) {
@@ -14,7 +14,7 @@ class ServiceDeps extends EventEmitter {
         this.addService(key, value);
       });
     }
-    this.checkTimeout = checkTimeout * 1000;
+    this.checkTimeout = obj.checkTimeout || 5000;
     this.monitorInterval = obj.monitorInterval || 1000 * 30;
   }
 

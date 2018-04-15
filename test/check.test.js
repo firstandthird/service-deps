@@ -102,7 +102,7 @@ tap.test('checkTimeout', async (t) => {
   const services = {
     test: 'http://localhost:8085',
   };
-  const sd = new ServiceDeps({ services }, 3);
+  const sd = new ServiceDeps({ services, checkTimeout: 3000 });
   try {
     await sd.checkService('test');
   } catch (e) {
