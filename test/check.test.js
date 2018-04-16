@@ -89,6 +89,25 @@ tap.test('error check fallback', async (t) => {
   t.end();
 });
 
+tap.test('retries', async (t) => {
+  let letPass = 0;
+  const retryServer = http.createServer((req, res) => {
+    letPass++;
+    if (letPass > 3) {
+      res.end();
+    }
+  });
+  retryServer.timeout = 500;
+  retryServer.listen(8085);
+  const services = {
+    test: 'http://localhost:8085',
+  };
+  const sd = new ServiceDeps({ services, retries: 5 });
+  await sd.checkServices();
+  retryServer.close();
+  t.end();
+});
+
 tap.test('health url', (t) => {
   server.close();
   t.end();
