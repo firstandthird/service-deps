@@ -90,17 +90,12 @@ tap.test('error check fallback', async (t) => {
 });
 
 tap.test('request', async (t) => {
-  const testServer = http.createServer((req, res) => {
-    res.end();
-  });
-  testServer.listen(8085);
   const services = {
     test: 'http://localhost:8081'
   };
   const sd = new ServiceDeps({ services });
   const { res } = await sd.request('test', '/', 'get', {});
   t.equal(res.statusCode, 200);
-  testServer.close();
   t.end();
 });
 

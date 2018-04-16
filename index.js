@@ -71,7 +71,7 @@ class ServiceDeps extends EventEmitter {
     return url.toString();
   }
 
-  request(serviceName, path, method, wreckOptions) {
+  request(serviceName, path, method, wreckOptions = {}) {
     return wreck[method](this.getUrl(serviceName, path), wreckOptions);
   }
 
