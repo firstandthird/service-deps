@@ -89,6 +89,16 @@ tap.test('error check fallback', async (t) => {
   t.end();
 });
 
+tap.test('request', async (t) => {
+  const services = {
+    test: 'http://localhost:8081'
+  };
+  const sd = new ServiceDeps({ services });
+  const { res } = await sd.request('test', '/', 'get', {});
+  t.equal(res.statusCode, 200);
+  t.end();
+});
+
 tap.test('retries', async (t) => {
   let letPass = 0;
   const retryServer = http.createServer((req, res) => {

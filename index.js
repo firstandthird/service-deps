@@ -73,6 +73,10 @@ class ServiceDeps extends EventEmitter {
     return url.toString();
   }
 
+  request(serviceName, path, method, wreckOptions = {}) {
+    return wreck[method](this.getUrl(serviceName, path), wreckOptions);
+  }
+
   async checkService(name, retriesDone = 0) {
     const service = this.getService(name);
     const healthUrl = this.getUrl(name, service.health);
