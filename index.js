@@ -15,6 +15,7 @@ class ServiceDeps extends EventEmitter {
       });
     }
     this.retries = obj.retries || 0;
+    this.checkTimeout = obj.checkTimeout || 5000;
     this.monitorInterval = obj.monitorInterval || 1000 * 30;
   }
 
@@ -80,7 +81,7 @@ class ServiceDeps extends EventEmitter {
     service.lastChecked = new Date();
     service.status = 'down';
     try {
-      res = await wreck.get(healthUrl);
+      res = await wreck.get(healthUrl, { timeout: this.checkTimeout });
       if (res.res.statusCode === 200) {
         service.status = 'up';
       }
