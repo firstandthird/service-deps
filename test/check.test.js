@@ -99,6 +99,49 @@ tap.test('request', async (t) => {
   t.end();
 });
 
+tap.test('retries', async (t) => {
+  let letPass = 0;
+  const retryServer = http.createServer((req, res) => {
+    letPass++;
+    if (letPass > 3) {
+      res.end();
+    }
+  });
+  retryServer.timeout = 500;
+  retryServer.listen(8085);
+  const services = {
+    test: 'http://localhost:8085',
+  };
+  const sd = new ServiceDeps({ services, retries: 5 });
+  await sd.checkServices();
+  retryServer.close();
+  t.end();
+});
+
+tap.test('checkTimeout', async (t) => {
+  const services = {
+    test: 'http://localhost:8085',
+  };
+  const sd = new ServiceDeps({ services, checkTimeout: 3000 });
+  // will not respond in time:
+  const server2 = http.createServer((req, res) => {
+    setTimeout(() => {
+      res.end();
+    }, 6000);
+  });
+  server2.listen(8085);
+
+  try {
+    await sd.checkService('test');
+  } catch (e) {
+    t.equal(e.output.statusCode, 504, 'returns HTTP 504 (gateway timeout error)');
+    server2.close();
+    t.end();
+    return;
+  }
+  t.fail();
+});
+
 tap.test('health url', (t) => {
   server.close();
   t.end();
