@@ -75,12 +75,14 @@ tap.test('endpoint ending with trailing slash', (t) => {
   const services = {
     test: {
       endpoint: 'http://test/api/',
+      prefix: '/prefix/',
+      health: '/health',
     }
   };
   const sd = new ServiceDeps({ services });
 
   const url = sd.getUrl('test', '/health');
-  t.equals(url, 'http://test/api/health');
+  t.equals(url, 'http://test/api/prefix/health');
   t.end();
 });
 
