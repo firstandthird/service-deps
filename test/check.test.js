@@ -26,15 +26,27 @@ tap.test('error check one', async (t) => {
     bad: 'http://localhost:8082'
   };
   const sd = new ServiceDeps({ services });
+  let called = false;
+  sd.on('service.error', (name, service, error) => {
+    t.equals(name, 'bad');
+    t.isA(service.lastChecked, Date, 'logs time of failed check');
+    t.match(error.message, 'Client request error: connect ECONNREFUSED 127.0.0.1:8082');
+    t.equals(service.status, 'down', 'logs status of failed check');
+    called = true;
+  });
+  await sd.checkService('bad');
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  t.ok(called);
+  t.end();
+});
 
-  try {
-    await sd.checkService('bad');
-  } catch (e) {
-    t.equals(e.message, 'Client request error: connect ECONNREFUSED 127.0.0.1:8082');
-    t.isA(sd.services.bad.lastChecked, Date, 'logs time of failed check');
-    t.equals(sd.services.bad.status, 'down', 'logs status of failed check');
-    t.end();
-  }
+tap.test('nonexistent endpoint does not crash', async (t) => {
+  const services = {
+    test: 'http://nowhere'
+  };
+  const sd = new ServiceDeps({ services });
+  await sd.checkService('test');
+  t.end();
 });
 
 tap.test('successful check all', async (t) => {
@@ -130,16 +142,19 @@ tap.test('checkTimeout', async (t) => {
     }, 6000);
   });
   server2.listen(8085);
-
-  try {
-    await sd.checkService('test');
-  } catch (e) {
-    t.equal(e.output.statusCode, 504, 'returns HTTP 504 (gateway timeout error)');
-    server2.close();
-    t.end();
-    return;
-  }
-  t.fail();
+  let called = false;
+  sd.on('service.error', (name, service, error) => {
+    t.equals(name, 'test');
+    t.isA(service.lastChecked, Date, 'logs time of failed check');
+    t.equal(error.output.statusCode, 504, 'returns HTTP 504 (gateway timeout error)');
+    t.equals(service.status, 'down', 'logs status of failed check');
+    called = true;
+  });
+  await sd.checkService('test');
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  t.ok(called);
+  server2.close();
+  t.end();
 });
 
 tap.test('health url', (t) => {
