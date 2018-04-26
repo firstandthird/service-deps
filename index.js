@@ -102,7 +102,6 @@ class ServiceDeps extends EventEmitter {
         return this.checkService(name, retriesDone + 1);
       }
       this.emit('service.error', name, service, e);
-      throw e;
     }
     return res;
   }
