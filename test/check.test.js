@@ -111,6 +111,22 @@ tap.test('request', async (t) => {
   t.end();
 });
 
+tap.test('request', async (t) => {
+  const server2 = http.createServer((req, res) => {
+    t.equal(req.headers['user-agent'], `service-deps ${require('../package.json').version} / test1 1.1.1`);
+    res.end();
+  });
+  server2.listen(8085);
+  const services = {
+    test: 'http://localhost:8085'
+  };
+  const sd = new ServiceDeps({ services, appName: 'test1', appVersion: '1.1.1' });
+  const { res } = await sd.request('test', '/', 'get', {});
+  t.equal(res.statusCode, 200);
+  server2.close();
+  t.end();
+});
+
 tap.test('retries', async (t) => {
   let letPass = 0;
   const retryServer = http.createServer((req, res) => {
