@@ -4,6 +4,7 @@ const querystring = require('querystring');
 const wreck = require('wreck');
 const EventEmitter = require('events');
 const Joi = require('joi');
+const version = require('./package.json').version;
 
 class ServiceDeps extends EventEmitter {
   constructor(obj = {}) {
@@ -14,6 +15,8 @@ class ServiceDeps extends EventEmitter {
         this.addService(key, value);
       });
     }
+    this.appName = obj.appName || 'Unknown';
+    this.appVersion = obj.appVersion || '0.0.0';
     this.retries = obj.retries || 0;
     this.checkTimeout = obj.checkTimeout || 5000;
     this.monitorInterval = obj.monitorInterval || 1000 * 30;
@@ -74,6 +77,10 @@ class ServiceDeps extends EventEmitter {
   }
 
   request(serviceName, path, method, wreckOptions = {}) {
+    if (!wreckOptions.headers) {
+      wreckOptions.headers = {};
+    }
+    wreckOptions.headers['user-agent'] = `service-deps ${version} / ${this.appName} ${this.appVersion}`;
     return wreck[method](this.getUrl(serviceName, path), wreckOptions);
   }
 
